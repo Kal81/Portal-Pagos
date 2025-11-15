@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Pagos - Universidad Tecmilenio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 50px auto;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .user-info {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .info-card h3 {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .pagos-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .pago-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .pago-item:hover {
+            border-color: #3498db;
+            transform: translateX(5px);
+        }
+
+        .pago-info {
+            flex: 1;
+        }
+
+        .pago-mes {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .pago-monto {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .pago-estado {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .estado-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .estado-pagado {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .estado-vencido {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .metodo-pago {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metodo-option {
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .metodo-option:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .metodo-option.selected {
+            border-color: #27ae60;
+            background: #d4edda;
+        }
+
+        .metodo-option.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+
+        .metodo-option.disabled:hover {
+            border-color: #e1e8ed;
+            background: #f8f9fa;
+        }
+
+        .payment-form {
+            display: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .logout {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .logout a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: white;
+            display: inline-block;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Modal de mantenimiento (NO SE PUEDE CERRAR) */
+        .modal-mantenimiento {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .modal-mantenimiento-content {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 3px solid white;
+        }
+
+        .modal-mantenimiento h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .modal-mantenimiento p {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .icono-mantenimiento {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        /* Modal para métodos no disponibles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal h3 {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .modal p {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .modal-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .transferencia-info {
+            background: #e8f4f8;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .transferencia-info h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .transferencia-datos {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .transferencia-datos p {
+            margin: 8px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .pagos-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de Mantenimiento (NO SE PUEDE CERRAR) -->
+    <div class="modal-mantenimiento" id="modalMantenimiento">
+        <div class="modal-mantenimiento-content">
+            <div class="icono-mantenimiento">🔧</div>
+            <h2>SITIO EN MANTENIMIENTO</h2>
+            <p>El portal de pagos se encuentra temporalmente fuera de servicio por mantenimiento programado.</p>
+            <p>Estamos trabajando para mejorar nuestro sistema y brindarte un mejor servicio.</p>
+            <p>Disculpa las molestias. Por favor intenta más tarde.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Universidad Tecmilenio - Portal de Pagos</h1>
+            <p>Sistema de gestión de colegiaturas y pagos en línea</p>
+        </div>
+
+        <!-- Login Section -->
+        <div class="login-container" id="loginSection">
+            <h2>Iniciar Sesión</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="matricula">Matrícula</label>
+                    <input type="text" id="matricula" placeholder="Ingresa tu matrícula" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+                <button type="submit" class="btn">Acceder al Portal</button>
+            </form>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="dashboard" id="dashboardSection">
+            <div class="logout">
+                <a href="#" id="logoutLink">Cerrar Sesión</a>
+            </div>
+
+            <!-- Información del Estudiante -->
+            <div class="user-info">
+                <div class="info-card">
+                    <h3>ESTUDIANTE</h3>
+                    <p id="studentName">-</p>
+                </div>
+                <div class="info-card">
+                    <h3>MATRÍCULA</h3>
+                    <p id="studentId">-</p>
+                </div>
+                <div class="info-card">
+                    <h3>SEMESTRE</h3>
+                    <p id="studentGrade">-</p>
+                </div>
+                <div class="info-card">
+                    <h3>SALDO TOTAL</h3>
+                    <p id="totalBalance">-</p>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div id="alertContainer"></div>
+
+            <div class="pagos-container">
+                <!-- Lista de Pagos Pendientes -->
+                <div class="card">
+                    <h2>📅 Colegiaturas Pendientes</h2>
+                    <div id="pagosList">
+                        <!-- Los pagos se cargan dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Panel de Pago -->
+                <div class="card">
+                    <h2>💳 Realizar Pago</h2>
+                    <div id="pagoPanel">
+                        <p>Selecciona una colegiatura pendiente para pagar</p>
+                    </div>
+                    
+                    <!-- Formulario de Pago (oculto inicialmente) -->
+                    <div class="payment-form" id="paymentForm">
+                        <div class="form-group">
+                            <label>Método de Pago</label>
+                            <div class="metodo-pago">
+                                <div class="metodo-option disabled" data-metodo="tarjeta">
+                                    💳 Tarjeta
+                                </div>
+                                <div class="metodo-option" data-metodo="transferencia">
+                                    🏦 Transferencia
+                                </div>
+                                <div class="metodo-option disabled" data-metodo="efectivo">
+                                    💰 Efectivo
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información para Transferencia -->
+                        <div id="transferenciaInfo" class="transferencia-info">
+                            <h4>📋 Datos para Transferencia Bancaria</h4>
+                            <div class="transferencia-datos">
+                                <p><strong>Banco:</strong> Banorte</p>
+                                <p><strong>CLABE:</strong> 072849004500155190</p>
+                                <p><strong>Cuenta:</strong> 0450015519</p>
+                                <p><strong>Beneficiario:</strong> Universidad Tecmilenio</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Número de Referencia/Comprobante</label>
+                            <input type="text" id="referenciaComprobante" placeholder="Ingresa el número de referencia">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Monto a Pagar</label>
+                            <input type="text" id="montoPago" readonly>
+                        </div>
+
+                        <button class="btn btn-success" id="confirmarPago">Confirmar Pago</button>
+                        <button class="btn btn-secondary" id="cancelarPago">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de Pagos -->
+            <div class="card" style="margin-top: 30px;">
+                <h2>📋 Historial de Pagos</h2>
+                <div id="historialPagos">
+                    <!-- El historial se carga dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para métodos no disponibles -->
+    <div class="modal" id="modalNoDisponible">
+        <div class="modal-content">
+            <h3>⚠️ Método No Disponible</h3>
+            <p id="modalMessage">Este método de pago no está disponible temporalmente. Estamos trabajando para resolverlo lo antes posible.</p>
+            <button class="modal-btn" id="modalCerrar">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo
+        const estudiantes = [
+            {
+                matricula: "2842083",
+                password: "#Bloqueo&11",
+                nombre: "Ricardo Goris Cruz",
+                grado: "6° Semestre",
+                saldoTotal: 13500,
+                colegiaturas: [
+                    { id: 1, mes: "Septiembre 2025", monto: 13500, vencimiento: "2025-09-29", estado: "pagado" },
+                    { id: 2, mes: "Octubre 2025", monto: 13500, vencimiento: "2025-10-29", estado: "pagado" },
+                    { id: 3, mes: "Noviembre 2025", monto: 13500, vencimiento: "2025-11-29", estado: "pendiente" }
+                ],
+                historialPagos: [
+                    { mes: "Septiembre 2025", monto: 13500, fecha: "2025-09-19", metodo: "Tarjeta", referencia: "TXN-0919" },
+                    { mes: "Octubre 2025", monto: 13500, fecha: "2025-10-15", metodo: "Transferencia", referencia: "TRF-1015" }
+                ]
+            }
+        ];
+
+        let estudianteActual = null;
+        let pagoSeleccionado = null;
+
+        // El modal de mantenimiento NO SE PUEDE CERRAR - siempre visible
+        document.getElementById('modalMantenimiento').style.display = 'flex';
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const matricula = document.getElementById('matricula').value;
+            const password = document.getElementById('password').value;
+            
+            const estudiante = estudiantes.find(est => est.matricula === matricula && est.password === password);
+            
+            if(estudiante) {
+                estudianteActual = estudiante;
+                // Ocultar modal de mantenimiento solo si el login es exitoso
+                document.getElementById('modalMantenimiento').style.display = 'none';
+                mostrarDashboard();
+            } else {
+                mostrarAlerta('Matrícula o contraseña incorrectos', 'error');
+            }
+        });
+
+        // Mostrar dashboard
+        function mostrarDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            
+            // Actualizar información
+            document.getElementById('studentName').textContent = estudianteActual.nombre;
+            document.getElementById('studentId').textContent = estudianteActual.matricula;
+            document.getElementById('studentGrade').textContent = estudianteActual.grado;
+            document.getElementById('totalBalance').textContent = `$${estudianteActual.saldoTotal.toLocaleString()}`;
+            
+            cargarPagosPendientes();
+            cargarHistorialPagos();
+        }
+
+        // Cargar pagos pendientes
+        function cargarPagosPendientes() {
+            const contenedor = document.getElementById('pagosList');
+            contenedor.innerHTML = '';
+            
+            estudianteActual.colegiaturas.forEach(pago => {
+                const pagoItem = document.createElement('div');
+                pagoItem.className = 'pago-item';
+                pagoItem.innerHTML = `
+                    <div class="pago-info">
+                        <div class="pago-mes">${pago.mes}</div>
+                        <div class="pago-monto">$${pago.monto.toLocaleString()}</div>
+                        <div>Vence: ${new Date(pago.vencimiento).toLocaleDateString()}</div>
+                    </div>
+                    <div class="pago-estado estado-${pago.estado}">
+                        ${pago.estado.toUpperCase()}
+                    </div>
+                `;
+                
+                if (pago.estado !== 'pagado') {
+                    pagoItem.addEventListener('click', () => seleccionarPago(pago));
+                } else {
+                    pagoItem.style.cursor = 'default';
+                    pagoItem.style.opacity = '0.7';
+                }
+                contenedor.appendChild(pagoItem);
+            });
+        }
+
+        // Seleccionar pago
+        function seleccionarPago(pago) {
+            pagoSeleccionado = pago;
+            
+            document.getElementById('pagoPanel').style.display = 'none';
+            document.getElementById('paymentForm').style.display = 'block';
+            document.getElementById('montoPago').value = `$${pago.monto.toLocaleString()}`;
+            
+            // Resetear selección de método de pago
+            document.querySelectorAll('.metodo-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Seleccionar transferencia por defecto
+            document.querySelector('[data-metodo="transferencia"]').classList.add('selected');
+        }
+
+        // Métodos de pago - Mostrar modal para métodos no disponibles
+        document.querySelectorAll('.metodo-option').forEach(option => {
+            option.addEventListener('click', function() {
+                if (this.classList.contains('disabled')) {
+                    const metodo = this.dataset.metodo;
+                    let mensaje = '';
+                    
+                    if (metodo === 'tarjeta') {
+                        mensaje = 'El pago con tarjeta no está disponible temporalmente. Estamos trabajando con nuestro procesador de pagos para resolver este problema. Disculpa las molestias.';
+                    } else if (metodo === 'efectivo') {
+                        mensaje = 'El pago en efectivo no está disponible en este momento. Estamos implementando un nuevo sistema de recepción de pagos. Por favor utiliza transferencia bancaria.';
+                    }
+                    
+                    document.getElementById('modalMessage').textContent = mensaje;
+                    document.getElementById('modalNoDisponible').style.display = 'flex';
+                    return;
+                }
+                
+                document.querySelectorAll('.metodo-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+
+        // Cerrar modal
+        document.getElementById('modalCerrar').addEventListener('click', function() {
+            document.getElementById('modalNoDisponible').style.display = 'none';
+        });
+
+        // Confirmar pago (solo transferencia)
+        document.getElementById('confirmarPago').addEventListener('click', function() {
+            if (!pagoSeleccionado) {
+                mostrarAlerta('Por favor selecciona un pago', 'error');
+                return;
+            }
+            
+            const referencia = document.getElementById('referenciaComprobante').value;
+            if (!referencia) {
+                mostrarAlerta('Por favor ingresa el número de referencia/comprobante', 'error');
+                return;
+            }
+            
+            // Simular procesamiento de pago
+            setTimeout(() => {
+                // Actualizar estado del pago
+                pagoSeleccionado.estado = 'pagado';
+                
+                // Agregar al historial
+                estudianteActual.historialPagos.unshift({
+                    mes: pagoSeleccionado.mes,
+                    monto: pagoSeleccionado.monto,
+                    fecha: new Date().toISOString().split('T')[0],
+                    metodo: 'TRANSFERENCIA',
+                    referencia: referencia
+                });
+                
+                // Recalcular saldo
+                estudianteActual.saldoTotal = estudianteActual.colegiaturas
+                    .filter(p => p.estado !== 'pagado')
+                    .reduce((sum, p) => sum + p.monto, 0);
+                
+                mostrarAlerta(`¡Pago registrado exitosamente! Referencia: ${referencia}`, 'success');
+                
+                // Actualizar interfaz
+                document.getElementById('totalBalance').textContent = `$${estudianteActual.saldoTotal.toLocaleString()}`;
+                cargarPagosPendientes();
+                cargarHistorialPagos();
+                resetearFormularioPago();
+            }, 2000);
+        });
+
+        // Cancelar pago
+        document.getElementById('cancelarPago').addEventListener('click', resetearFormularioPago);
+
+        function resetearFormularioPago() {
+            pagoSeleccionado = null;
+            document.getElementById('paymentForm').style.display = 'none';
+            document.getElementById('pagoPanel').style.display = 'block';
+            document.querySelectorAll('.metodo-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.getElementById('referenciaComprobante').value = '';
+        }
+
+        // Cargar historial de pagos
+        function cargarHistorialPagos() {
+            const contenedor = document.getElementById('historialPagos');
+            contenedor.innerHTML = '';
+            
+            if (estudianteActual.historialPagos.length === 0) {
+                contenedor.innerHTML = '<p>No hay pagos registrados en el historial</p>';
+                return;
+            }
+            
+            estudianteActual.historialPagos.forEach(pago => {
+                const pagoItem = document.createElement('div');
+                pagoItem.className = 'pago-item';
+                pagoItem.innerHTML = `
+                    <div class="pago-info">
+                        <div class="pago-mes">${pago.mes}</div>
+                        <div class="pago-monto">$${pago.monto.toLocaleString()}</div>
+                        <div>${pago.fecha} • ${pago.metodo}</div>
+                    </div>
+                    <div style="color: #27ae60; font-weight: 600;">
+                        ${pago.referencia}
+                    </div>
+                `;
+                contenedor.appendChild(pagoItem);
+            });
+        }
+
+        // Mostrar alertas
+        function mostrarAlerta(mensaje, tipo) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${tipo}`;
+            alert.textContent = mensaje;
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Logout
+        document.getElementById('logoutLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('matricula').value = '';
+            document.getElementById('password').value = '';
+            estudianteActual = null;
+            // Mostrar modal de mantenimiento otra vez al hacer logout
+            document.getElementById('modalMantenimiento').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>
