@@ -451,7 +451,7 @@
                 <div class="card">
                     <h2>💳 Realizar Pago</h2>
                     <div id="pagoPanel">
-                        <p>Selecciona una colegiatura pendiente para pagar</p>
+                        <p>Todas las colegiaturas están pagadas</p>
                     </div>
                     
                     <!-- Formulario de Pago (oculto inicialmente) -->
@@ -529,9 +529,11 @@
                 colegiaturas: [
                     { id: 1, mes: "Septiembre 2025", monto: 13500, vencimiento: "2025-09-29", estado: "pagado" },
                     { id: 2, mes: "Octubre 2025", monto: 13500, vencimiento: "2025-10-29", estado: "pagado" },
-                    { id: 3, mes: "Noviembre 2025", monto: 13500, vencimiento: "2025-11-29", estado: "pagado" }
+                    { id: 3, mes: "Noviembre 2025", monto: 13500, vencimiento: "2025-11-29", estado: "pagado" },
+                    { id: 4, mes: "Enero 2026", monto: 16200, vencimiento: "2026-01-29", estado: "pagado" }
                 ],
                 historialPagos: [
+                    { mes: "Enero 2026", monto: 16200, fecha: "2026-01-11", metodo: "Transferencia", referencia: "TRF-0111" },
                     { mes: "Noviembre 2025", monto: 13500, fecha: "2025-11-15", metodo: "Transferencia", referencia: "TRF-1115" },
                     { mes: "Octubre 2025", monto: 13500, fecha: "2025-10-15", metodo: "Transferencia", referencia: "TRF-1015" },
                     { mes: "Septiembre 2025", monto: 13500, fecha: "2025-09-19", metodo: "Tarjeta", referencia: "TXN-0919" }
@@ -578,6 +580,13 @@
         function cargarPagosPendientes() {
             const contenedor = document.getElementById('pagosList');
             contenedor.innerHTML = '';
+            
+            const pagosPendientes = estudianteActual.colegiaturas.filter(pago => pago.estado !== 'pagado');
+            
+            if (pagosPendientes.length === 0) {
+                contenedor.innerHTML = '<p>Todas las colegiaturas están pagadas</p>';
+                return;
+            }
             
             estudianteActual.colegiaturas.forEach(pago => {
                 const pagoItem = document.createElement('div');
